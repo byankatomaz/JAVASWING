@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+        "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+    <session-factory>
+        <!-- Configurações de conexão com o banco de dados -->
+        <property name="hibernate.connection.driver_class">org.sqlite.JDBC</property>
+        <property name="hibernate.connection.url">jdbc:sqlite:C:\Users\mob7ca\Desktop\JavaSW\ScriptBanco\DeliveryBank.db</property>
+
+        <!-- Configuração do dialeto do banco de dados -->
+        <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
+        <property name="hibernate.id.new_generator_mappings">true</property>
+
+        <!-- Configuração do mapeamento de classes -->
+        <mapping class="Entidades.Restaurante" />
+        <mapping class="Entidades.Lanche" />
+        <mapping class="Entidades.Usuario" />
+        <mapping class="Entidades.Pedido" />
+    </session-factory>
+</hibernate-configuration>
