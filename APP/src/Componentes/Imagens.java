@@ -2,7 +2,7 @@ package Componentes;
 
 public class Imagens {
 
-    private String caminho = "C:\\Users\\50362773840\\Desktop\\JAVASWING\\APP\\src\\Imagens";
+    private String caminho = "C:\\Users\\mob7ca\\Desktop\\JAVASWING\\APP\\src\\Imagens";
 
     private String inicialImg = caminho + "\\telaInicial.png";
     private String tipoCadImg = caminho + "\\telaTipoCad.png";
@@ -15,8 +15,11 @@ public class Imagens {
     private String sucesso = caminho + "\\telaSucesso.png";
     private String restaurantes = caminho + "\\restaurantes.png";
     private String lanches = caminho + "\\lanches.png";
-    private String add = caminho + "\\add.png";
-    private String remove = caminho + "\\remove.png";
+    private String carrinho = caminho + "\\carrinho.png";
+    private String finalizado = caminho + "\\finalizado.png";
+    private String meusPedidos = caminho + "\\meusPedidos.png";
+    private String restConfirmacao = caminho + "\\restConfirmacao.png";
+    private String restPedidos = caminho + "\\restPedidos.png";
 
     public String getInicialImg() {
         return inicialImg;
@@ -62,11 +65,24 @@ public class Imagens {
         return lanches;
     }
 
-    public String getAdd() {
-        return add;
+    public String getCarrinho() {
+        return carrinho;
     }
 
-    public String getRemove() {
-        return remove;
+    public String getFinalizado() {
+        return finalizado;
     }
+
+    public String getMeusPedidos() {
+        return meusPedidos;
+    }
+
+    public String getRestConfirmacao() {
+        return restConfirmacao;
+    }
+
+    public String getRestPedidos() {
+        return restPedidos;
+    }
+
 }

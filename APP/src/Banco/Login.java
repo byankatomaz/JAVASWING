@@ -1,8 +1,5 @@
 package Banco;
 
-import Entidades.Lanche;
-import Entidades.Restaurante;
-import Entidades.Usuario;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;

@@ -76,6 +76,8 @@ class Pedidos(Base):
     
     idLanche:Mapped[int] = mapped_column(ForeignKey('lanches.id'), nullable=False)
     
+    quant:Mapped[int] = mapped_column(Integer, nullable=False)
+    
     totalPrice:Mapped[float] = mapped_column(nullable=False)
     
 

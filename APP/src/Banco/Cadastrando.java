@@ -1,6 +1,7 @@
 package Banco;
 
 import Entidades.Lanche;
+import Entidades.Pedido;
 import Entidades.Restaurante;
 import Entidades.Usuario;
 import org.hibernate.Session;
@@ -32,7 +33,6 @@ public class Cadastrando {
     public int inserirRestaurante(Restaurante restaurante) {
 
         Integer nextPrimaryKeyValue = (Integer) session.createQuery("SELECT COALESCE(MAX(id), 0) + 1 FROM Restaurante").uniqueResult();
-        restaurante.setId(nextPrimaryKeyValue);
 
         restaurante.setId(nextPrimaryKeyValue);
         session.save(restaurante);
@@ -44,36 +44,28 @@ public class Cadastrando {
         return restauranteId;
     }
 
-    public Lanche inserirLanche(Restaurante rest, List<Lanche> lanches) {
+    public void inserirLancheFK(Restaurante rest, List<Lanche> lanches) {
         configInicial();
 
         Restaurante restaurante = session.get(Restaurante.class, rest.getId());
 
         for (Lanche lanche: lanches) {
+            int lancheId = restaurante.getId() * 1000 + lanches.indexOf(lanche);
+
+            lanche.setId(lancheId);
             lanche.setRestaurante(restaurante);
 
-            session.save(lanche);
+            inserirLanche(lanche);
         }
-        System.out.println("pronto");
-
-        configFinal();
-
-        return null;
     }
 
-    public int inserirLanche(Lanche lanche) {
-        configInicial();
+    public void inserirLanche(Lanche lanche) {
 
         Integer nextPrimaryKeyValue = (Integer) session.createQuery("SELECT COALESCE(MAX(id), 0) + 1 FROM Lanche").uniqueResult();
         lanche.setId(nextPrimaryKeyValue);
-
         session.save(lanche);
 
-        int lancheId = lanche.getId();
-
         configFinal();
-
-        return lancheId;
     }
 
     public void inserirRestauranteComLanche(Restaurante restaurante, List<Lanche> lanches) {
@@ -92,6 +84,8 @@ public class Cadastrando {
             inserirLanche(lanche);
         }
 
+        configFinal();
+
     }
 
     public int inserirUsuario(Usuario usuario) {
@@ -108,6 +102,30 @@ public class Cadastrando {
         configFinal();
 
         return usuarioId;
+    }
+
+    public Pedido insertPedido(Pedido pedido) {
+        configInicial();
+
+        Integer nextPrimaryKeyValue = (Integer) session.createQuery("SELECT COALESCE(MAX(id), 0) + 1 FROM Pedido").uniqueResult();
+
+        Restaurante restaurante = session.get(Restaurante.class, pedido.getRestaurantes());
+        Usuario usuario = session.get(Usuario.class, pedido.getUsuarios());
+        Lanche lanche = session.get(Lanche.class, pedido.getLanche());
+
+        pedido.setPrecoTotal(lanche.getPreco()* pedido.getQuantidade());
+
+        pedido.setId(nextPrimaryKeyValue);
+        pedido.setRestaurantes(restaurante);
+        pedido.setUsuarios(usuario);
+
+        pedido.setLanche(lanche);
+
+        session.save(pedido);
+
+        configFinal();
+
+        return pedido;
     }
 
 }

@@ -1,85 +1,64 @@
 package Banco;
 
+import Entidades.Lanche;
+import Entidades.Pedido;
+import Entidades.Restaurante;
+import Entidades.Usuario;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 
-import javax.swing.*;
-import javax.swing.border.Border;
-import javax.swing.border.EmptyBorder;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.List;
 
-public class Banco {
-    SessionFactory sessionFactory;
-    Session session;
-    Transaction transaction;
+//public class Banco {
+//    SessionFactory sessionFactory;
+//    Session session;
+//    Transaction transaction;
+//
+//    public void configInicial() {
+//        sessionFactory = new Configuration().configure("hibernate.cfg.xml").buildSessionFactory();
+//        session = sessionFactory.openSession();
+//        transaction = session.beginTransaction();
+//    }
+//
+//
+//    public void configFinal(){
+//        transaction.commit();
+//        session.close();
+//        sessionFactory.close();
+//    }
 
-    public void configInicial() {
-        sessionFactory = new Configuration().configure("hibernate.cfg.xml").buildSessionFactory();
-        session = sessionFactory.openSession();
-        transaction = session.beginTransaction();
-    }
+//    public Pedido insertPedido(Integer usu, Integer rest, Integer lanc, Integer quant) {
+//        configInicial();
+//
+//        Integer nextPrimaryKeyValue = (Integer) session.createQuery("SELECT COALESCE(MAX(id), 0) + 1 FROM Pedido").uniqueResult();
+//
+//        Restaurante restaurante = session.get(Restaurante.class, rest);
+//        Usuario usuario = session.get(Usuario.class, usu);
+//        Lanche lanche = session.get(Lanche.class, lanc);
+//
+//        double precoTotal = lanche.getPreco()*quant;
 
+//        Pedido newPedido = new Pedido(quant, precoTotal);
 
-    public void configFinal(){
-        transaction.commit();
-        session.close();
-        sessionFactory.close();
-    }
+//        newPedido.setId(nextPrimaryKeyValue);
+//        newPedido.setRestaurantes(restaurante);
+//        newPedido.setUsuarios(usuario);
+//        newPedido.setLanche(lanche);
+//
+//        session.save(newPedido);
+//
+//        configFinal();
+//
+//        return newPedido;
+//    }
 
-    public List<String> entrandoRestaurante() {
-
-        configInicial();
-
-        List<String> nomes = session.createQuery("SELECT rest.nome FROM Restaurante rest").list();
-
-        for (String nome: nomes) {
-            System.out.println(nome);
-        }
-
-        return nomes;
-    }
-
-    public static void main(String[] args) {
-        Banco banco = new Banco();
-
-        List<String> restaurantes = banco.entrandoRestaurante();
-
-        JFrame frame = new JFrame();
-
-        JPanel panel = new JPanel();
-
-        Box verticalBox = Box.createVerticalBox();
-
-        for (String restaurante : restaurantes) {
-            JPanel labelPanel = new JPanel();
-
-
-            // Crie uma borda para o JPanel
-            Border border = BorderFactory.createLineBorder(Color.BLACK, 2); // Cor e largura da borda
-            labelPanel.setBorder(border);
-
-            JLabel label = new JLabel(restaurante);
-            labelPanel.add(label);
-
-            verticalBox.add(labelPanel);
-            verticalBox.add(Box.createRigidArea(new Dimension(0, 20)));
-        }
-
-        // Crie um JScrollPane para adicionar o verticalBox
-        JScrollPane scrollPane = new JScrollPane(verticalBox);
-
-        panel.add(scrollPane);
-
-        frame.add(panel);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setVisible(true);
-        frame.revalidate();
-        frame.repaint();
-
-    }
-}
+//    public static void main(String[] args) {
+//        Banco banco = new Banco();
+//
+//        banco.insertPedido(1, 1, 3, 5);
+//
+//    }
+//}

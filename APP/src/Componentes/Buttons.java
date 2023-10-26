@@ -4,6 +4,7 @@ import Banco.Cadastrando;
 import Banco.Deletando;
 import Banco.Login;
 import Entidades.Lanche;
+import Entidades.Pedido;
 import Entidades.Restaurante;
 import Entidades.Usuario;
 
@@ -19,6 +20,7 @@ import java.util.function.Supplier;
 public class Buttons extends JButton {
 
     private Frame frames;
+    private Pedido pedido;
     Cadastrando banco = new Cadastrando();
     Login bancoLogin = new Login();
     Components label = new Components();
@@ -189,7 +191,7 @@ public class Buttons extends JButton {
             frames.camposLanches.clear();
 
             tela.dispose();
-            frames.telaSucesso();
+            frames.telaSucesso(frames.telaInicial());
         });
 
         return finalizar;
@@ -234,7 +236,7 @@ public class Buttons extends JButton {
             banco.inserirUsuario(usuario);
 
             tela.dispose();
-            frames.telaSucesso();
+            frames.telaSucesso(frames.telaInicial());
         });
 
         return finalizar;
@@ -317,7 +319,7 @@ public class Buttons extends JButton {
                 System.out.println("ENTROU");
                 System.out.println("Voce é o " + nome);
                 frames.setLoginUsuario(idUser);
-                frames.setNomeUsuario(nome);
+                frames.setUsuario(nome);
                 tela.dispose();
                 frames.restaurantesCadastrados();
             }
@@ -368,16 +370,15 @@ public class Buttons extends JButton {
 
         finalizar.addActionListener(e -> {
 
-            List<Lanche> teste = new ArrayList<>();
+            List<Lanche> lanches = new ArrayList<>();
             String nome = lanche.get(0).getText();
             String descricao = lanche.get(1).getText();
             double preco = Double.parseDouble(lanche.get(2).getText());
 
             Lanche lancheNovo = new Lanche(nome, descricao, preco);
+            lanches.add(lancheNovo);
 
-            teste.add(lancheNovo);
-
-            banco.inserirLanche(restaurante, teste);
+            banco.inserirLancheFK(restaurante, lanches);
 
 
             lanchesLista.add(lancheNovo);
@@ -388,7 +389,7 @@ public class Buttons extends JButton {
             frames.camposLanches.clear();
 
             tela.dispose();
-            frames.telaSucesso();
+            frames.telaSucesso(frames.cardapio());
 
         });
 
@@ -398,16 +399,33 @@ public class Buttons extends JButton {
     public JButton addPedido(Lanche lanche){
         JButton addPedido = new JButton("+");
         addPedido.setLocation(200, 10);
-        addPedido.setPreferredSize(new Dimension(41,35));;
+        addPedido.setPreferredSize(new Dimension(41,35));
 
         addPedido.addActionListener(new ActionListener() {
+            int quant = 1;
+
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println(lanche.getId());
+                frames.setQuant(quant++);
+                frames.setLanche(lanche);
             }
         });
-
         return addPedido;
+    }
+
+    public JButton finalizarPedido(Lanche lanche, Usuario usu){
+        JButton finalizarPedido = new JButton("Finalizar");
+        finalizarPedido.setLocation(200, 10);
+        finalizarPedido.setPreferredSize(new Dimension(41,35));
+
+        finalizarPedido.addActionListener(new ActionListener() {
+            int quant = 1;
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                pedido = new Pedido(lanche.getRestaurante(), usu, frames.getLanche(), frames.getQuant());
+            }
+        });
+        return finalizarPedido;
     }
 
     public JButton removeDoCardapio(JFrame tela, Lanche lanche){

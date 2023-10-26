@@ -1,7 +1,9 @@
 package Componentes;
 
 import Entidades.Lanche;
+import Entidades.Pedido;
 import Entidades.Restaurante;
+import Entidades.Usuario;
 
 import javax.swing.*;
 import java.awt.*;
@@ -15,10 +17,13 @@ public class Frame  {
     //Parte para mandar os dados entre Frames
     ArrayList<String> camposResta = new ArrayList<>();
     List<Lanche> camposLanches = new ArrayList<>();
+    List<Pedido> pedidos = new ArrayList<>();
 
-    Integer loginUsuario;
-    Integer restId;
-    String nomeUsuario;
+    private Integer loginUsuario;
+    private Integer quant;
+    private String usuario;
+    private Restaurante restaurante;
+    private Lanche lanche;
 
 
     //Variaveis que serão usadas durante o desenvolvimento da aplicação, as com letra maiuscula indica que ela será fixa.
@@ -37,6 +42,29 @@ public class Frame  {
     private final TextRestLogin loginRest = new TextRestLogin();
     private final TextCliLogin loginCli = new TextCliLogin();
 
+    public List<Pedido> getPedidos() {
+        return pedidos;
+    }
+
+    public void setPedidos(List<Pedido> pedidos) {
+        this.pedidos = pedidos;
+    }
+
+    public Lanche getLanche() {
+        return lanche;
+    }
+
+    public void setLanche(Lanche lanche) {
+        this.lanche = lanche;
+    }
+
+    public Integer getQuant() {
+        return quant;
+    }
+
+    public void setQuant(Integer quant) {
+        this.quant = quant;
+    }
 
     public Integer getLoginUsuario() {
         return loginUsuario;
@@ -46,15 +74,13 @@ public class Frame  {
         this.loginUsuario = loginUsuario;
     }
 
-    public String getNomeUsuario() {
-        return nomeUsuario;
+    public String getUsuario() {
+        return usuario;
     }
 
-    public void setNomeUsuario(String nomeUsuario) {
-        this.nomeUsuario = nomeUsuario;
+    public void setUsuario(String usuario) {
+        this.usuario = usuario;
     }
-
-    Restaurante restaurante;
 
     public Restaurante getRestaurante() {
         return restaurante;
@@ -79,6 +105,11 @@ public class Frame  {
     public void setCamposResta(ArrayList<String> camposResta) {
         this.camposResta = camposResta;
     }
+
+    public JFrame cadastroCardapio(){
+        return cadastroCardapio(getRestaurante());
+    }
+
 
     // Esse JFrame contém os comandos de configurações em comum entre os Frames.
     public void geralConfig(JFrame tela){
@@ -168,10 +199,6 @@ public class Frame  {
         return  restauranteCadastro;
     }
 
-    public JFrame cadastroCardapio(){
-        return cadastroCardapio(getRestaurante());
-    }
-
     public JFrame cadastroCardapio(Restaurante restaurante){
         JFrame cadastroCardapio = new JFrame(TITLE);
 
@@ -201,7 +228,7 @@ public class Frame  {
         return cadastroCardapio;
     }
 
-    public JFrame telaSucesso(){
+    public JFrame telaSucesso(JFrame frame){
         JFrame sucesso = new JFrame(TITLE);
 
         SwingUtilities.invokeLater(() -> {
@@ -211,7 +238,11 @@ public class Frame  {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     sucesso.dispose();
-                    telaInicial();
+                    if(frame != null){
+                        frame.setVisible(true);
+                    }else {
+                        telaInicial();
+                    }
                 }
             });
 
@@ -298,7 +329,7 @@ public class Frame  {
             JPanel background = (JPanel) panel.panel(img.getRestaurantes());
 
             JScrollPane listRestaurante = (JScrollPane) panel.cardRestaurantes(restaurantesCadastrados);
-            JLabel nameText = panel.textName(restaurantesCadastrados, getNomeUsuario());
+            JLabel nameText = panel.textName(restaurantesCadastrados, getUsuario());
             JButton buttonLogout = buttons.logout(restaurantesCadastrados, this::tipoLogin);
 
             buttonLogout.setPreferredSize(new Dimension(100, 50));
@@ -333,10 +364,11 @@ public class Frame  {
 
             JPanel background = (JPanel) panel.panel(img.getLanches());
             JScrollPane listLanches = (JScrollPane) panel.cardLanches(lanchesCadastrados, getRestaurante());
-            JLabel nameUsu = panel.textName(lanchesCadastrados, getNomeUsuario());
+            JLabel nameUsu = panel.textName(lanchesCadastrados, getUsuario());
             JLabel nameRest = panel.textName(lanchesCadastrados, getRestaurante().getNome());
             JButton voltar = buttons.logout(lanchesCadastrados, this::restaurantesCadastrados);
             JButton addMaisLanche = buttons.addLanche(lanchesCadastrados, getRestaurante());
+            JButton finalizar = buttons.finalizarPedido(lanche, getUsuario());
 
             voltar.setPreferredSize(new Dimension(30, 30));
             addMaisLanche.setPreferredSize(new Dimension(127,35));;;
