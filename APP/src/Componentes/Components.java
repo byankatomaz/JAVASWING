@@ -2,6 +2,8 @@ package Componentes;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -50,7 +52,6 @@ public class Components extends JLabel {
 
         for (Restaurante restaurante : restaurantes) {
             JButton button = buttonTeste.restaurantesDisponiveis(tela, restaurante);
-            frames.setRestaurante(restaurante);
             verticalBox.add(button);
             verticalBox.add(Box.createRigidArea(new Dimension(0, 20)));
         }
@@ -62,17 +63,31 @@ public class Components extends JLabel {
         return scrollPane;
     }
 
-    public Component cardLanches(JFrame tela) {
+    public Component cardLanches(JFrame tela, Restaurante restaurante) {
         banco = new Consultando();
         frames = new Frame();
         buttonTeste = new Buttons(frames);
-        List<Lanche> lanches = banco.entrandoCardapio(frames.getRestaurante());
+        List<Lanche> lanches = banco.entrandoCardapio(restaurante);
 
         Box verticalBox = Box.createVerticalBox();
 
         for (Lanche lanche : lanches) {
-            JButton button = buttonTeste.lanchesDisponiveis(tela, lanche);
-            verticalBox.add(button);
+            JPanel panelLanche = new JPanel();
+
+            panelLanche.setMaximumSize(new Dimension(250, 50));
+
+            JLabel nome = new JLabel(lanche.getNome());
+            nome.setPreferredSize(new Dimension(120,40));
+            panelLanche.add(nome);
+
+            JButton adicona = buttonTeste.addPedido(lanche);
+            panelLanche.add(adicona);
+
+            JButton excluir = buttonTeste.removeDoCardapio(tela, lanche);
+            excluir.setBounds(250, 10, 20, 20 );
+            panelLanche.add(excluir);
+
+            verticalBox.add(panelLanche);
             verticalBox.add(Box.createRigidArea(new Dimension(0, 20)));
         }
 

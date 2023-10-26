@@ -10,7 +10,7 @@ import org.hibernate.query.Query;
 
 import java.util.List;
 
-public class Consultando {
+public class Deletando {
     SessionFactory sessionFactory;
     Session session;
     Transaction transaction;
@@ -28,37 +28,19 @@ public class Consultando {
         sessionFactory.close();
     }
 
-    public List<Restaurante> entrandoRestaurante() {
+    public void deleteLanche(int id) {
 
         configInicial();
-        List<Restaurante> restaurantes = session.createQuery("FROM Restaurante").list();
 
-        for (Restaurante nome: restaurantes) {
-            System.out.println(nome);
-        }
+//        Query query = session.createQuery("FROM Lanche l WHERE l.id = :lanche");
+//        query.setParameter("lanche", lanches);
 
-        configFinal();
+        Lanche lanche = session.get(Lanche.class, id);
 
-        return restaurantes;
-    }
+        session.delete(lanche);
 
-
-    public List<Lanche> entrandoCardapio(Restaurante restaurante) {
-
-        configInicial();
-        Query query = session.createQuery("FROM Lanche l WHERE l.restaurante = :restaurante");
-        query.setParameter("restaurante", restaurante);
-
-        System.out.println(restaurante);
-
-        List<Lanche> lanches = query.list();
-
-        for (Lanche nome: lanches) {
-            System.out.println(nome);
-        }
+        System.out.println("deletado com sucesso");
 
         configFinal();
-
-        return lanches;
     }
 }

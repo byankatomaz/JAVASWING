@@ -2,7 +2,7 @@ package Componentes;
 
 public class Imagens {
 
-    private String caminho = "C:\\Users\\bybyt\\OneDrive\\Área de Trabalho\\JAVASWING\\APP\\src\\Imagens";
+    private String caminho = "C:\\Users\\50362773840\\Desktop\\JAVASWING\\APP\\src\\Imagens";
 
     private String inicialImg = caminho + "\\telaInicial.png";
     private String tipoCadImg = caminho + "\\telaTipoCad.png";
@@ -15,6 +15,8 @@ public class Imagens {
     private String sucesso = caminho + "\\telaSucesso.png";
     private String restaurantes = caminho + "\\restaurantes.png";
     private String lanches = caminho + "\\lanches.png";
+    private String add = caminho + "\\add.png";
+    private String remove = caminho + "\\remove.png";
 
     public String getInicialImg() {
         return inicialImg;
@@ -58,5 +60,13 @@ public class Imagens {
 
     public String getLanches() {
         return lanches;
+    }
+
+    public String getAdd() {
+        return add;
+    }
+
+    public String getRemove() {
+        return remove;
     }
 }

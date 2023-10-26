@@ -4,6 +4,7 @@ import Entidades.Lanche;
 import Entidades.Restaurante;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -168,6 +169,10 @@ public class Frame  {
     }
 
     public JFrame cadastroCardapio(){
+        return cadastroCardapio(getRestaurante());
+    }
+
+    public JFrame cadastroCardapio(Restaurante restaurante){
         JFrame cadastroCardapio = new JFrame(TITLE);
 
         SwingUtilities.invokeLater(() -> {
@@ -183,7 +188,13 @@ public class Frame  {
             camposLanche.add((JTextField) cadastroCardapio.add(textLanche.preco()));
 
             cadastroCardapio.add(buttons.buttonAdicionarMais(cadastroCardapio, camposLanche));
-            cadastroCardapio.add(buttons.finalizarRestaurante(cadastroCardapio, getCamposResta(), camposLanche));
+
+            if(restaurante != null){
+                cadastroCardapio.add(buttons.finalizarLanche(cadastroCardapio, getRestaurante(), camposLanche));
+            } else {
+                cadastroCardapio.add(buttons.finalizarRestaurante(cadastroCardapio, getCamposResta(), camposLanche));
+            }
+
 
         });
 
@@ -288,15 +299,20 @@ public class Frame  {
 
             JScrollPane listRestaurante = (JScrollPane) panel.cardRestaurantes(restaurantesCadastrados);
             JLabel nameText = panel.textName(restaurantesCadastrados, getNomeUsuario());
+            JButton buttonLogout = buttons.logout(restaurantesCadastrados, this::tipoLogin);
+
+            buttonLogout.setPreferredSize(new Dimension(100, 50));
+            buttonLogout.setHorizontalAlignment(SwingConstants.CENTER);
 
             nameText.setBounds(75, 760, 80, 30);
-
             listRestaurante.setBounds(48, 310, 270, 400);
+            buttonLogout.setBounds(312, 758, 32, 32);
+
+            restaurantesCadastrados.add(buttonLogout);
 
             restaurantesCadastrados.add(nameText);
             restaurantesCadastrados.add(listRestaurante);
             restaurantesCadastrados.add(background);
-            restaurantesCadastrados.add(buttons.logout(restaurantesCadastrados, this::tipoLogin));
 
             restaurantesCadastrados.setVisible(true);
 
@@ -316,17 +332,27 @@ public class Frame  {
             lanchesCadastrados.setResizable(false);
 
             JPanel background = (JPanel) panel.panel(img.getLanches());
+            JScrollPane listLanches = (JScrollPane) panel.cardLanches(lanchesCadastrados, getRestaurante());
+            JLabel nameUsu = panel.textName(lanchesCadastrados, getNomeUsuario());
+            JLabel nameRest = panel.textName(lanchesCadastrados, getRestaurante().getNome());
+            JButton voltar = buttons.logout(lanchesCadastrados, this::restaurantesCadastrados);
+            JButton addMaisLanche = buttons.addLanche(lanchesCadastrados, getRestaurante());
 
-            JScrollPane listLanches = (JScrollPane) panel.cardLanches(lanchesCadastrados);
-            JLabel nameText = panel.textName(lanchesCadastrados, getNomeUsuario());
-            nameText.setBounds(75, 760, 80, 30);
-            listLanches.setBounds(48, 310, 270, 400);
+            voltar.setPreferredSize(new Dimension(30, 30));
+            addMaisLanche.setPreferredSize(new Dimension(127,35));;;
 
+            nameUsu.setBounds(75, 760, 80, 30);
+            nameRest.setBounds(70, 15, 200, 30);
+            listLanches.setBounds(48, 200, 270, 400);
+            voltar.setBounds(5, 7, 18, 15);
+            addMaisLanche.setBounds(210, 92, 127, 35);
 
-            lanchesCadastrados.add(nameText);
+            lanchesCadastrados.add(voltar);
+            lanchesCadastrados.add(addMaisLanche);
+            lanchesCadastrados.add(nameUsu);
+            lanchesCadastrados.add(nameRest);
             lanchesCadastrados.add(listLanches);
             lanchesCadastrados.add(background);
-            lanchesCadastrados.add(buttons.voltar(lanchesCadastrados, this::restaurantesCadastrados));
 
             lanchesCadastrados.setVisible(true);
 

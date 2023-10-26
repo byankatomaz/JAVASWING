@@ -44,6 +44,23 @@ public class Cadastrando {
         return restauranteId;
     }
 
+    public Lanche inserirLanche(Restaurante rest, List<Lanche> lanches) {
+        configInicial();
+
+        Restaurante restaurante = session.get(Restaurante.class, rest.getId());
+
+        for (Lanche lanche: lanches) {
+            lanche.setRestaurante(restaurante);
+
+            session.save(lanche);
+        }
+        System.out.println("pronto");
+
+        configFinal();
+
+        return null;
+    }
+
     public int inserirLanche(Lanche lanche) {
         configInicial();
 

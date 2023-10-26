@@ -1,6 +1,7 @@
 package Componentes;
 
 import Banco.Cadastrando;
+import Banco.Deletando;
 import Banco.Login;
 import Entidades.Lanche;
 import Entidades.Restaurante;
@@ -40,7 +41,7 @@ public class Buttons extends JButton {
     public JButton voltar(JFrame tela, Supplier<JFrame> telaAnteriorProvider){
 
         JButton buttonVoltar = new JButton();
-        buttonVoltar.setBounds(5, 7, 18, 15);
+        buttonVoltar.setBounds(5, 7, 30, 30);
 
         geralConfig(buttonVoltar);
 
@@ -57,7 +58,6 @@ public class Buttons extends JButton {
     public JButton logout(JFrame tela, Supplier<JFrame> telaAnteriorProvider){
 
         JButton buttonLogout = new JButton();
-        buttonLogout.setBounds(312, 758, 32, 32);
 
         geralConfig(buttonLogout);
 
@@ -331,11 +331,12 @@ public class Buttons extends JButton {
         JButton restSelecionado = new JButton(restaurante.getNome());
         restSelecionado.setMaximumSize(new Dimension(270, 50));
 
-//            button.setActionCommand(String.valueOf(restaurante.getId()));
+        restSelecionado.setActionCommand(String.valueOf(restaurante.getId()));
 
         restSelecionado.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                frames.setRestaurante(restaurante);
                 tela.dispose();
                 frames.cardapio();
             }
@@ -344,20 +345,87 @@ public class Buttons extends JButton {
         return restSelecionado;
     }
 
-    public JButton lanchesDisponiveis(JFrame tela, Lanche lanche){
-        JButton lancheSelec = new JButton(lanche.getNome());
-        lancheSelec.setMaximumSize(new Dimension(270, 50));
+    public JButton addLanche(JFrame tela, Restaurante restaurante){
+        JButton addLanche = new JButton("Adicionar mais");
 
-        lancheSelec.setActionCommand(String.valueOf(lanche.getId()));
-
-        lancheSelec.addActionListener(new ActionListener() {
+        geralConfig(addLanche);
+        addLanche.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println(e.getActionCommand());
+                tela.dispose();
+                frames.cadastroCardapio();
             }
         });
 
-        return lancheSelec;
+        return addLanche;
+    }
+
+    public JButton finalizarLanche(JFrame tela, Restaurante restaurante, ArrayList<JTextField> lanche){
+        JButton finalizar = new JButton("Finalizar");
+        finalizar.setBounds(104, 718, 152, 51);
+
+        geralConfig(finalizar);
+
+        finalizar.addActionListener(e -> {
+
+            List<Lanche> teste = new ArrayList<>();
+            String nome = lanche.get(0).getText();
+            String descricao = lanche.get(1).getText();
+            double preco = Double.parseDouble(lanche.get(2).getText());
+
+            Lanche lancheNovo = new Lanche(nome, descricao, preco);
+
+            teste.add(lancheNovo);
+
+            banco.inserirLanche(restaurante, teste);
+
+
+            lanchesLista.add(lancheNovo);
+
+            frames.setCamposLanches(lanchesLista);
+
+            frames.camposResta.clear();
+            frames.camposLanches.clear();
+
+            tela.dispose();
+            frames.telaSucesso();
+
+        });
+
+        return finalizar;
+    }
+
+    public JButton addPedido(Lanche lanche){
+        JButton addPedido = new JButton("+");
+        addPedido.setLocation(200, 10);
+        addPedido.setPreferredSize(new Dimension(41,35));;
+
+        addPedido.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println(lanche.getId());
+            }
+        });
+
+        return addPedido;
+    }
+
+    public JButton removeDoCardapio(JFrame tela, Lanche lanche){
+        Deletando  del = new Deletando();
+        JButton removeDoCardapio = new JButton("-");
+
+        removeDoCardapio.setPreferredSize(new Dimension(42,35));
+        removeDoCardapio.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                del.deleteLanche(lanche.getId());
+                System.out.println("Foi deletado");
+                tela.dispose();
+                frames.restaurantesCadastrados();
+            }
+        });
+
+        return removeDoCardapio;
     }
 
 
