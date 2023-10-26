@@ -1,9 +1,9 @@
 package Componentes;
 
 import Entidades.Lanche;
+import Entidades.Restaurante;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -13,26 +13,55 @@ public class Frame  {
 
     //Parte para mandar os dados entre Frames
     ArrayList<String> camposResta = new ArrayList<>();
-    ArrayList<String> camposUsuario = new ArrayList<>();
     List<Lanche> camposLanches = new ArrayList<>();
+
+    Integer loginUsuario;
+    Integer restId;
+    String nomeUsuario;
 
 
     //Variaveis que serão usadas durante o desenvolvimento da aplicação, as com letra maiuscula indica que ela será fixa.
     private final Imagens img = new Imagens();
-    private final Integer X = 800;
-    private final Integer Y = 100;
+    private final Integer X = 500;
+    private final Integer Y = 0;
     private final Integer WIDTH = 376;
     private final Integer HEIGHT = 838;
     private final String TITLE = "Foosy";
 
     private final Buttons buttons = new Buttons(this);
-    private final Panel panel = new Panel();
+    private final Components panel = new Components();
     private final TextCampRestaurante text = new TextCampRestaurante();
     private final TextCampCliente textCli = new TextCampCliente();
     private final TextCampCard textLanche = new TextCampCard();
     private final TextRestLogin loginRest = new TextRestLogin();
     private final TextCliLogin loginCli = new TextCliLogin();
 
+
+    public Integer getLoginUsuario() {
+        return loginUsuario;
+    }
+
+    public void setLoginUsuario(Integer loginUsuario) {
+        this.loginUsuario = loginUsuario;
+    }
+
+    public String getNomeUsuario() {
+        return nomeUsuario;
+    }
+
+    public void setNomeUsuario(String nomeUsuario) {
+        this.nomeUsuario = nomeUsuario;
+    }
+
+    Restaurante restaurante;
+
+    public Restaurante getRestaurante() {
+        return restaurante;
+    }
+
+    public void setRestaurante(Restaurante restaurante) {
+        this.restaurante = restaurante;
+    }
 
     public List<Lanche> getCamposLanches() {
         return camposLanches;
@@ -226,7 +255,7 @@ public class Frame  {
     }
 
     // Esse JFrame é a tela de Login como Cliente da aplicação, onde estou adicionandos seus componentes e retornando
-    public void entrarCliente(){
+    public JFrame entrarCliente(){
         JFrame entrarCliente = new JFrame(TITLE);
 
         SwingUtilities.invokeLater(() -> {
@@ -241,41 +270,10 @@ public class Frame  {
 
             entrarCliente.add(buttons.buttonLogandoCli(entrarCliente, camposLogar));
         });
+
+        return entrarCliente;
     }
 
-//    public JFrame restaurantesCadastrados(){
-//        JFrame restaurantesCadastrados = new JFrame(TITLE);
-//
-//        SwingUtilities.invokeLater(() -> {
-//            restaurantesCadastrados.setBounds(X, Y, WIDTH, HEIGHT);
-//            restaurantesCadastrados.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//            restaurantesCadastrados.setResizable(false);
-//
-////            List<JPanel> restaurantPanels = panel.cardRestaurantes();
-//
-//            JPanel teste = (JPanel) panel.cardRestaurantes();
-//
-//
-//            int x = 50;
-//            int y = 310;
-//            int w = 260;
-//            int h = 50;
-//
-////            for (JPanel panel : restaurantPanels) {
-////                panel.setBounds(x, y, w, h);
-////                restaurantesCadastrados.add(panel);
-////                y += 70;
-////            }
-//            teste.setBounds(x, y, w, h);
-//            restaurantesCadastrados.add(teste);
-//
-//            restaurantesCadastrados.add(panel.panel(img.getRestaurantes()));
-//
-//            restaurantesCadastrados.setVisible(true);
-//        });
-//
-//        return restaurantesCadastrados;
-//    }
 
     public JFrame restaurantesCadastrados(){
         JFrame restaurantesCadastrados = new JFrame(TITLE);
@@ -286,24 +284,57 @@ public class Frame  {
             restaurantesCadastrados.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             restaurantesCadastrados.setResizable(false);
 
-            JPanel teste = (JPanel) panel.panel(img.getRestaurantes());
+            JPanel background = (JPanel) panel.panel(img.getRestaurantes());
 
-            JScrollPane teste2 = (JScrollPane) panel.cardRestaurantes();
+            JScrollPane listRestaurante = (JScrollPane) panel.cardRestaurantes(restaurantesCadastrados);
+            JLabel nameText = panel.textName(restaurantesCadastrados, getNomeUsuario());
 
-            teste2.setBounds(48, 310, 270, 200);
+            nameText.setBounds(75, 760, 80, 30);
 
-            restaurantesCadastrados.add(teste2);
-            restaurantesCadastrados.add(teste);
+            listRestaurante.setBounds(48, 310, 270, 400);
 
-            restaurantesCadastrados.setVisible(true);
-
-            restaurantesCadastrados.add(teste);
+            restaurantesCadastrados.add(nameText);
+            restaurantesCadastrados.add(listRestaurante);
+            restaurantesCadastrados.add(background);
+            restaurantesCadastrados.add(buttons.logout(restaurantesCadastrados, this::tipoLogin));
 
             restaurantesCadastrados.setVisible(true);
 
         });
 
+        System.out.println("Pelo get do Frames: " + getLoginUsuario());
         return restaurantesCadastrados;
     }
+
+    public JFrame cardapio(){
+        JFrame lanchesCadastrados = new JFrame(TITLE);
+
+        SwingUtilities.invokeLater(() -> {
+
+            lanchesCadastrados.setBounds(X, Y, WIDTH, HEIGHT);
+            lanchesCadastrados.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            lanchesCadastrados.setResizable(false);
+
+            JPanel background = (JPanel) panel.panel(img.getLanches());
+
+            JScrollPane listLanches = (JScrollPane) panel.cardLanches(lanchesCadastrados);
+            JLabel nameText = panel.textName(lanchesCadastrados, getNomeUsuario());
+            nameText.setBounds(75, 760, 80, 30);
+            listLanches.setBounds(48, 310, 270, 400);
+
+
+            lanchesCadastrados.add(nameText);
+            lanchesCadastrados.add(listLanches);
+            lanchesCadastrados.add(background);
+            lanchesCadastrados.add(buttons.voltar(lanchesCadastrados, this::restaurantesCadastrados));
+
+            lanchesCadastrados.setVisible(true);
+
+        });
+
+        System.out.println("Pelo get do Frames: " + getLoginUsuario());
+        return lanchesCadastrados;
+    }
+
 
 }

@@ -7,6 +7,9 @@ import Entidades.Restaurante;
 import Entidades.Usuario;
 
 import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
@@ -17,7 +20,7 @@ public class Buttons extends JButton {
     private Frame frames;
     Cadastrando banco = new Cadastrando();
     Login bancoLogin = new Login();
-    Panel label = new Panel();
+    Components label = new Components();
     private List<Lanche> lanchesLista = new ArrayList<>();
     private ArrayList<String> restauranteLista = new ArrayList<>();
 
@@ -49,6 +52,25 @@ public class Buttons extends JButton {
         });
 
         return buttonVoltar;
+    }
+
+    public JButton logout(JFrame tela, Supplier<JFrame> telaAnteriorProvider){
+
+        JButton buttonLogout = new JButton();
+        buttonLogout.setBounds(312, 758, 32, 32);
+
+        geralConfig(buttonLogout);
+
+        buttonLogout.addActionListener(e -> {
+            JFrame telaAnterior = telaAnteriorProvider.get();
+
+            tela.dispose();
+            frames.setLoginUsuario(null);
+            System.out.println("Apos logout: " + frames.getLoginUsuario());
+            telaAnterior.setVisible(true);
+        });
+
+        return buttonLogout;
     }
 
     public JButton buttonTipoLog(JFrame tela){
@@ -283,10 +305,19 @@ public class Buttons extends JButton {
                 camposLogin.add(campos.getText());
             }
 
-            boolean result = bancoLogin.entrandoCliente(camposLogin.get(0), camposLogin.get(1));
+            Object[] results = bancoLogin.entrandoCliente(camposLogin.get(0), camposLogin.get(1));
+            for (Object campo: results) {
+                System.out.println(campo);
+            }
 
-            if (result){
+            String nome = (String) results[2];
+            Integer idUser = (Integer) results[3];
+
+            if (results != null){
                 System.out.println("ENTROU");
+                System.out.println("Voce é o " + nome);
+                frames.setLoginUsuario(idUser);
+                frames.setNomeUsuario(nome);
                 tela.dispose();
                 frames.restaurantesCadastrados();
             }
@@ -296,6 +327,38 @@ public class Buttons extends JButton {
         return logar;
     }
 
+    public JButton restaurantesDisponiveis(JFrame tela, Restaurante restaurante){
+        JButton restSelecionado = new JButton(restaurante.getNome());
+        restSelecionado.setMaximumSize(new Dimension(270, 50));
+
+//            button.setActionCommand(String.valueOf(restaurante.getId()));
+
+        restSelecionado.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                tela.dispose();
+                frames.cardapio();
+            }
+        });
+
+        return restSelecionado;
+    }
+
+    public JButton lanchesDisponiveis(JFrame tela, Lanche lanche){
+        JButton lancheSelec = new JButton(lanche.getNome());
+        lancheSelec.setMaximumSize(new Dimension(270, 50));
+
+        lancheSelec.setActionCommand(String.valueOf(lanche.getId()));
+
+        lancheSelec.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println(e.getActionCommand());
+            }
+        });
+
+        return lancheSelec;
+    }
 
 
 

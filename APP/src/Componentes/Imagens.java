@@ -2,7 +2,7 @@ package Componentes;
 
 public class Imagens {
 
-    private String caminho = "C:\\Users\\mob7ca\\Desktop\\JavaSW\\APP\\src\\Imagens";
+    private String caminho = "C:\\Users\\bybyt\\OneDrive\\Área de Trabalho\\JAVASWING\\APP\\src\\Imagens";
 
     private String inicialImg = caminho + "\\telaInicial.png";
     private String tipoCadImg = caminho + "\\telaTipoCad.png";

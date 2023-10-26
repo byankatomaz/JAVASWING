@@ -7,6 +7,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
+import org.hibernate.query.Query;
 
 import javax.swing.*;
 import java.util.List;
@@ -59,35 +60,33 @@ public class Login {
         return false;
     }
 
-    public boolean entrandoCliente(String emailCli, String senhaCli) {
+    public Object[] entrandoCliente(String emailCli, String senhaCli) {
 
         configInicial();
 
-        String emailCliente = (String) session.createQuery("SELECT usu.email FROM Usuario usu").uniqueResult();
-        String senhaCliente = (String) session.createQuery("SELECT usu.senha FROM Usuario usu").uniqueResult();
+        Query query = session.createQuery("SELECT usu.email, usu.senha, usu.nome, usu.id FROM Usuario usu WHERE usu.email = :email");
+        query.setParameter("email", emailCli);
 
-        if (emailCli.equals(emailCliente)){
+        List<Object[]> results = query.list();
 
-            System.out.println("Email esta cadastrado");
+        if (!results.isEmpty()) {
+            Object[] result = results.get(0);
+            String senhaCliente = (String) result[1];
 
-            if (senhaCli.equals(senhaCliente)){
-                System.out.println("Senha esta correta, pode entrar");
-
+            if (senhaCli.equals(senhaCliente)) {
                 configFinal();
-
-                return true;
+                return result;
             } else {
                 JOptionPane.showMessageDialog(null, "Senha incorreta, tente novamente", "Senha incorreta", JOptionPane.WARNING_MESSAGE);
             }
-
         } else {
             JOptionPane.showMessageDialog(null, "Esse email não está cadastrado", "Email não cadastrado", JOptionPane.WARNING_MESSAGE);
-            configFinal();
-            return false;
         }
 
-        return false;
+        configFinal();
+        return null;
     }
+
 
 
 
