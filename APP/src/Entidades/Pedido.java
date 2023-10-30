@@ -19,9 +19,17 @@ public class Pedido {
     @JoinColumn(name = "idUsuario")
     private Usuario usuarios;
 
-    @ManyToOne
-    @JoinColumn(name = "idLanche")
-    private Lanche lanche;
+    @ManyToMany
+    @JoinTable(
+            name = "idLanche",
+            joinColumns = @JoinColumn(name = "pedido_id"),
+            inverseJoinColumns = @JoinColumn(name = "lanche_id")
+    )
+    private List<Lanche> lanche;
+
+//    @ManyToOne
+//    @JoinColumn(name = "idLanche")
+//    private List<Lanche> lanche;
 
     @Column(name = "quant")
     private Integer quantidade;
@@ -29,7 +37,7 @@ public class Pedido {
     @Column(name = "totalPrice")
     private Double precoTotal;
 
-    public Pedido(Restaurante restaurantes, Usuario usuarios, Lanche lanche, Integer quantidade) {
+    public Pedido(Restaurante restaurantes, Usuario usuarios, List<Lanche> lanche, Integer quantidade) {
         this.restaurantes = restaurantes;
         this.usuarios = usuarios;
         this.lanche = lanche;
@@ -76,11 +84,23 @@ public class Pedido {
         this.precoTotal = precoTotal;
     }
 
-    public Lanche getLanche() {
+    public List<Lanche> getLanche() {
         return lanche;
     }
 
-    public void setLanche(Lanche lanche) {
+    public void setLanche(List<Lanche> lanche) {
         this.lanche = lanche;
+    }
+
+    @Override
+    public String toString() {
+        return "Pedido{" +
+                "id=" + id +
+                ", restaurantes=" + restaurantes +
+                ", usuarios=" + usuarios +
+                ", lanche=" + lanche +
+                ", quantidade=" + quantidade +
+                ", precoTotal=" + precoTotal +
+                '}';
     }
 }

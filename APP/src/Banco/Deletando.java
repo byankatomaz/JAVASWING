@@ -1,14 +1,10 @@
 package Banco;
 
 import Entidades.Lanche;
-import Entidades.Restaurante;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
-import org.hibernate.query.Query;
-
-import java.util.List;
 
 public class Deletando {
     SessionFactory sessionFactory;
@@ -28,7 +24,7 @@ public class Deletando {
         sessionFactory.close();
     }
 
-    public void deleteLanche(int id) {
+    public void deleteLanche(Lanche id) {
 
         configInicial();
 

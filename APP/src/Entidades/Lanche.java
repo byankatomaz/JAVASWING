@@ -30,7 +30,7 @@ public class Lanche{
         this.preco = preco;
     }
 
-    public int getId() {
+    public Lanche getId() {
         return id;
     }
 

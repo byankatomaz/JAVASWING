@@ -1,5 +1,6 @@
 package Componentes;
 
+import Banco.Logado;
 import Entidades.Lanche;
 import Entidades.Pedido;
 import Entidades.Restaurante;
@@ -19,11 +20,10 @@ public class Frame  {
     List<Lanche> camposLanches = new ArrayList<>();
     List<Pedido> pedidos = new ArrayList<>();
 
-    private Integer loginUsuario;
     private Integer quant;
-    private String usuario;
+    private Usuario usuario;
     private Restaurante restaurante;
-    private Lanche lanche;
+    private List<Lanche> lancheSelecionado;
 
 
     //Variaveis que serão usadas durante o desenvolvimento da aplicação, as com letra maiuscula indica que ela será fixa.
@@ -35,7 +35,8 @@ public class Frame  {
     private final String TITLE = "Foosy";
 
     private final Buttons buttons = new Buttons(this);
-    private final Components panel = new Components();
+    private final Components panel = new Components(this, buttons);
+    private final Logado usuarioLogado = new Logado(this);
     private final TextCampRestaurante text = new TextCampRestaurante();
     private final TextCampCliente textCli = new TextCampCliente();
     private final TextCampCard textLanche = new TextCampCard();
@@ -50,12 +51,21 @@ public class Frame  {
         this.pedidos = pedidos;
     }
 
-    public Lanche getLanche() {
-        return lanche;
+    private List<Integer> quantidades = new ArrayList<>();
+
+    // Outros métodos da classe Frames
+
+    public void addLanche(Lanche lanche, int quantidade) {
+        lancheSelecionado.add(lanche);
+        quantidades.add(quantidade);
     }
 
-    public void setLanche(Lanche lanche) {
-        this.lanche = lanche;
+    public List<Lanche> getLancheSelecionado() {
+        return lancheSelecionado;
+    }
+
+    public void setLancheSelecionado(List<Lanche> lancheSelecionado) {
+        this.lancheSelecionado = lancheSelecionado;
     }
 
     public Integer getQuant() {
@@ -66,19 +76,11 @@ public class Frame  {
         this.quant = quant;
     }
 
-    public Integer getLoginUsuario() {
-        return loginUsuario;
-    }
-
-    public void setLoginUsuario(Integer loginUsuario) {
-        this.loginUsuario = loginUsuario;
-    }
-
-    public String getUsuario() {
+    public Usuario getUsuario() {
         return usuario;
     }
 
-    public void setUsuario(String usuario) {
+    public void setUsuario(Usuario usuario) {
         this.usuario = usuario;
     }
 
@@ -310,7 +312,7 @@ public class Frame  {
             camposLogar.add((JTextField) entrarCliente.add(loginCli.emailCliente()));
             camposLogar.add((JTextField) entrarCliente.add(loginCli.senhaCliente()));
 
-            entrarCliente.add(buttons.buttonLogandoCli(entrarCliente, camposLogar));
+            entrarCliente.add(buttons.buttonLogandoCli(entrarCliente, camposLogar, usuarioLogado));
         });
 
         return entrarCliente;
@@ -319,6 +321,8 @@ public class Frame  {
 
     public JFrame restaurantesCadastrados(){
         JFrame restaurantesCadastrados = new JFrame(TITLE);
+
+        System.out.println(usuario);
 
         SwingUtilities.invokeLater(() -> {
 
@@ -329,19 +333,19 @@ public class Frame  {
             JPanel background = (JPanel) panel.panel(img.getRestaurantes());
 
             JScrollPane listRestaurante = (JScrollPane) panel.cardRestaurantes(restaurantesCadastrados);
-            JLabel nameText = panel.textName(restaurantesCadastrados, getUsuario());
+            JLabel usuName = panel.textName(restaurantesCadastrados, getUsuario().getNome());
             JButton buttonLogout = buttons.logout(restaurantesCadastrados, this::tipoLogin);
 
             buttonLogout.setPreferredSize(new Dimension(100, 50));
             buttonLogout.setHorizontalAlignment(SwingConstants.CENTER);
 
-            nameText.setBounds(75, 760, 80, 30);
+            usuName.setBounds(75, 758, 80, 30);
             listRestaurante.setBounds(48, 310, 270, 400);
             buttonLogout.setBounds(312, 758, 32, 32);
 
             restaurantesCadastrados.add(buttonLogout);
 
-            restaurantesCadastrados.add(nameText);
+            restaurantesCadastrados.add(usuName);
             restaurantesCadastrados.add(listRestaurante);
             restaurantesCadastrados.add(background);
 
@@ -349,7 +353,6 @@ public class Frame  {
 
         });
 
-        System.out.println("Pelo get do Frames: " + getLoginUsuario());
         return restaurantesCadastrados;
     }
 
@@ -364,22 +367,24 @@ public class Frame  {
 
             JPanel background = (JPanel) panel.panel(img.getLanches());
             JScrollPane listLanches = (JScrollPane) panel.cardLanches(lanchesCadastrados, getRestaurante());
-            JLabel nameUsu = panel.textName(lanchesCadastrados, getUsuario());
+            JLabel nameUsu = panel.textName(lanchesCadastrados, getUsuario().getNome());
             JLabel nameRest = panel.textName(lanchesCadastrados, getRestaurante().getNome());
-            JButton voltar = buttons.logout(lanchesCadastrados, this::restaurantesCadastrados);
+            JButton voltar = buttons.voltar(lanchesCadastrados, this::restaurantesCadastrados);
             JButton addMaisLanche = buttons.addLanche(lanchesCadastrados, getRestaurante());
-            JButton finalizar = buttons.finalizarPedido(lanche, getUsuario());
+            JButton finalizar = buttons.finalizarPedido(getUsuario());
 
             voltar.setPreferredSize(new Dimension(30, 30));
             addMaisLanche.setPreferredSize(new Dimension(127,35));;;
 
-            nameUsu.setBounds(75, 760, 80, 30);
+            nameUsu.setBounds(75, 758, 80, 30);
             nameRest.setBounds(70, 15, 200, 30);
+            finalizar.setBounds(198, 683, 200, 30);
             listLanches.setBounds(48, 200, 270, 400);
             voltar.setBounds(5, 7, 18, 15);
             addMaisLanche.setBounds(210, 92, 127, 35);
 
             lanchesCadastrados.add(voltar);
+            lanchesCadastrados.add(finalizar);
             lanchesCadastrados.add(addMaisLanche);
             lanchesCadastrados.add(nameUsu);
             lanchesCadastrados.add(nameRest);
@@ -390,7 +395,6 @@ public class Frame  {
 
         });
 
-        System.out.println("Pelo get do Frames: " + getLoginUsuario());
         return lanchesCadastrados;
     }
 

@@ -10,13 +10,19 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import Banco.Consultando;
+import Banco.Logado;
 import Entidades.Lanche;
 import Entidades.Restaurante;
 
 public class Components extends JLabel {
     Consultando banco;
-    Buttons buttonTeste;
+    Buttons buttons;
     Frame frames;
+
+    public Components(Frame frames, Buttons buttons){
+        this.frames = frames;
+        this.buttons = buttons;
+    }
 
 
     public Component panel(String img){
@@ -44,14 +50,13 @@ public class Components extends JLabel {
 
     public Component cardRestaurantes(JFrame tela) {
         banco = new Consultando();
-        frames = new Frame();
-        buttonTeste = new Buttons(frames);
+
         List<Restaurante> restaurantes = banco.entrandoRestaurante();
 
         Box verticalBox = Box.createVerticalBox();
 
         for (Restaurante restaurante : restaurantes) {
-            JButton button = buttonTeste.restaurantesDisponiveis(tela, restaurante);
+            JButton button = buttons.restSelecionado(tela, restaurante);
             verticalBox.add(button);
             verticalBox.add(Box.createRigidArea(new Dimension(0, 20)));
         }
@@ -65,8 +70,7 @@ public class Components extends JLabel {
 
     public Component cardLanches(JFrame tela, Restaurante restaurante) {
         banco = new Consultando();
-        frames = new Frame();
-        buttonTeste = new Buttons(frames);
+
         List<Lanche> lanches = banco.entrandoCardapio(restaurante);
 
         Box verticalBox = Box.createVerticalBox();
@@ -80,10 +84,10 @@ public class Components extends JLabel {
             nome.setPreferredSize(new Dimension(120,40));
             panelLanche.add(nome);
 
-            JButton adicona = buttonTeste.addPedido(lanche);
+            JButton adicona = buttons.addLanchePedido(lanche);
             panelLanche.add(adicona);
 
-            JButton excluir = buttonTeste.removeDoCardapio(tela, lanche);
+            JButton excluir = buttons.removeDoCardapio(tela, lanche);
             excluir.setBounds(250, 10, 20, 20 );
             panelLanche.add(excluir);
 
@@ -98,8 +102,9 @@ public class Components extends JLabel {
         return scrollPane;
     }
 
-    public JLabel textName(JFrame tela, String nameText){
-        JLabel name = new JLabel(nameText);
+    public JLabel textName(JFrame tela, String nome){
+
+        JLabel name = new JLabel(nome);
 
         name.setFont(new Font("Arial", Font.BOLD, 18));
         name.setForeground(Color.WHITE);

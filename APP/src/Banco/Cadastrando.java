@@ -23,11 +23,16 @@ public class Cadastrando {
         transaction = session.beginTransaction();
     }
 
-
-    public void configFinal(){
-        transaction.commit();
-        session.close();
-        sessionFactory.close();
+    public void configFinal() {
+        if (transaction != null && transaction.isActive()) {
+            transaction.commit();
+        }
+        if (session != null && session.isOpen()) {
+            session.close();
+        }
+        if (sessionFactory != null && !sessionFactory.isClosed()) {
+            sessionFactory.close();
+        }
     }
 
     public int inserirRestaurante(Restaurante restaurante) {
@@ -46,46 +51,59 @@ public class Cadastrando {
 
     public void inserirLancheFK(Restaurante rest, List<Lanche> lanches) {
         configInicial();
+        Transaction transaction = null;
 
-        Restaurante restaurante = session.get(Restaurante.class, rest.getId());
+        try {
+            transaction = session.beginTransaction();
+            Restaurante restaurante = session.get(Restaurante.class, rest.getId());
 
-        for (Lanche lanche: lanches) {
-            int lancheId = restaurante.getId() * 1000 + lanches.indexOf(lanche);
+            for (Lanche lanche : lanches) {
+                int lancheId = restaurante.getId() * 1000 + lanches.indexOf(lanche);
+                lanche.setId(lancheId);
+                lanche.setRestaurante(restaurante);
+                session.save(lanche);
+            }
 
-            lanche.setId(lancheId);
-            lanche.setRestaurante(restaurante);
-
-            inserirLanche(lanche);
+            transaction.commit();
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            e.printStackTrace();
+        } finally {
+            configFinal();
         }
     }
 
     public void inserirLanche(Lanche lanche) {
-
-        Integer nextPrimaryKeyValue = (Integer) session.createQuery("SELECT COALESCE(MAX(id), 0) + 1 FROM Lanche").uniqueResult();
-        lanche.setId(nextPrimaryKeyValue);
-        session.save(lanche);
-
-        configFinal();
+        try {
+            configInicial();
+            Transaction transaction = session.beginTransaction();
+            Integer nextPrimaryKeyValue = (Integer) session.createQuery("SELECT COALESCE(MAX(id), 0) + 1 FROM Lanche").uniqueResult();
+            lanche.setId(nextPrimaryKeyValue);
+            session.save(lanche);
+            transaction.commit();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            configFinal();
+        }
     }
 
+
     public void inserirRestauranteComLanche(Restaurante restaurante, List<Lanche> lanches) {
-
-        configInicial();
-
-        inserirRestaurante(restaurante);
-
-        for (Lanche lanche : lanches) {
-
-            int lancheId = restaurante.getId() * 1000 + lanches.indexOf(lanche);
-
-            lanche.setId(lancheId);
-            lanche.setRestaurante(restaurante);
-
-            inserirLanche(lanche);
+        try {
+            configInicial();
+            inserirRestaurante(restaurante);
+            for (Lanche lanche : lanches) {
+                int lancheId = restaurante.getId() * 1000 + lanches.indexOf(lanche);
+                lanche.setId(lancheId);
+                lanche.setRestaurante(restaurante);
+                inserirLanche(lanche);
+            }
+        } finally {
+            configFinal();
         }
-
-        configFinal();
-
     }
 
     public int inserirUsuario(Usuario usuario) {
@@ -111,15 +129,22 @@ public class Cadastrando {
 
         Restaurante restaurante = session.get(Restaurante.class, pedido.getRestaurantes());
         Usuario usuario = session.get(Usuario.class, pedido.getUsuarios());
-        Lanche lanche = session.get(Lanche.class, pedido.getLanche());
 
-        pedido.setPrecoTotal(lanche.getPreco()* pedido.getQuantidade());
+        // Calcule o preço total com base na lista de lanches
+        double precoTotal = 0.0;
+        for (Lanche lanche : pedido.getLanche()) {
+            precoTotal += lanche.getPreco() * pedido.getQuantidade();
+        }
 
         pedido.setId(nextPrimaryKeyValue);
         pedido.setRestaurantes(restaurante);
         pedido.setUsuarios(usuario);
+        pedido.setPrecoTotal(precoTotal);
 
-        pedido.setLanche(lanche);
+        // Lembre-se de configurar a relação entre o pedido e os lanches (muitos para muitos)
+        for (Lanche lanche : pedido.getLanche()) {
+            pedido.getLanche().add(lanche); // Associe o pedido ao lanche
+        }
 
         session.save(pedido);
 
@@ -127,5 +152,6 @@ public class Cadastrando {
 
         return pedido;
     }
+
 
 }

@@ -2,6 +2,7 @@ package Componentes;
 
 import Banco.Cadastrando;
 import Banco.Deletando;
+import Banco.Logado;
 import Banco.Login;
 import Entidades.Lanche;
 import Entidades.Pedido;
@@ -14,6 +15,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Supplier;
 
 
@@ -23,7 +25,7 @@ public class Buttons extends JButton {
     private Pedido pedido;
     Cadastrando banco = new Cadastrando();
     Login bancoLogin = new Login();
-    Components label = new Components();
+//    Components label = new Components();
     private List<Lanche> lanchesLista = new ArrayList<>();
     private ArrayList<String> restauranteLista = new ArrayList<>();
 
@@ -67,8 +69,8 @@ public class Buttons extends JButton {
             JFrame telaAnterior = telaAnteriorProvider.get();
 
             tela.dispose();
-            frames.setLoginUsuario(null);
-            System.out.println("Apos logout: " + frames.getLoginUsuario());
+            frames.setUsuario(null);
+
             telaAnterior.setVisible(true);
         });
 
@@ -294,7 +296,8 @@ public class Buttons extends JButton {
         return logar;
     }
 
-    public JButton buttonLogandoCli(JFrame tela, ArrayList<JTextField> logando){
+    public JButton buttonLogandoCli(JFrame tela, ArrayList<JTextField> logando, Logado usuario) {
+
         JButton logar = new JButton("Entrar");
         logar.setBounds(60, 718, 239, 51);
 
@@ -312,16 +315,13 @@ public class Buttons extends JButton {
                 System.out.println(campo);
             }
 
-            String nome = (String) results[2];
-            Integer idUser = (Integer) results[3];
+            if (results != null) {
+                usuario.usuarioLogado(results);
 
-            if (results != null){
-                System.out.println("ENTROU");
-                System.out.println("Voce é o " + nome);
-                frames.setLoginUsuario(idUser);
-                frames.setUsuario(nome);
                 tela.dispose();
                 frames.restaurantesCadastrados();
+            } else {
+                System.out.println("Login não realizado");
             }
 
         });
@@ -329,7 +329,8 @@ public class Buttons extends JButton {
         return logar;
     }
 
-    public JButton restaurantesDisponiveis(JFrame tela, Restaurante restaurante){
+
+    public JButton restSelecionado(JFrame tela, Restaurante restaurante){
         JButton restSelecionado = new JButton(restaurante.getNome());
         restSelecionado.setMaximumSize(new Dimension(270, 50));
 
@@ -396,37 +397,48 @@ public class Buttons extends JButton {
         return finalizar;
     }
 
-    public JButton addPedido(Lanche lanche){
+    public JButton addLanchePedido(Lanche lanche) {
         JButton addPedido = new JButton("+");
         addPedido.setLocation(200, 10);
-        addPedido.setPreferredSize(new Dimension(41,35));
+        addPedido.setPreferredSize(new Dimension(41, 35));
 
         addPedido.addActionListener(new ActionListener() {
             int quant = 1;
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                frames.setQuant(quant++);
-                frames.setLanche(lanche);
+                frames.setQuant(quant);
+                frames.addLanche(lanche.getId(), quant); // Adicione o lanche e a quantidade à lista
+                System.out.println(lanche);
+                quant++; // Aumente a quantidade para o próximo lanche
             }
         });
+
         return addPedido;
     }
 
-    public JButton finalizarPedido(Lanche lanche, Usuario usu){
+    public JButton finalizarPedido(Usuario usu) {
         JButton finalizarPedido = new JButton("Finalizar");
-        finalizarPedido.setLocation(200, 10);
-        finalizarPedido.setPreferredSize(new Dimension(41,35));
+        finalizarPedido.setPreferredSize(new Dimension(500, 200));
 
         finalizarPedido.addActionListener(new ActionListener() {
-            int quant = 1;
             @Override
             public void actionPerformed(ActionEvent e) {
-                pedido = new Pedido(lanche.getRestaurante(), usu, frames.getLanche(), frames.getQuant());
+                Restaurante restaurante = frames.getRestaurante(); // Certifique-se de obter o restaurante correto.
+                List<Lanche> lanches = frames.getLancheSelecionado(); // Certifique-se de obter a lista correta de lanches.
+                int quantidade = frames.getQuant(); // Certifique-se de obter a quantidade correta.
+
+                Pedido pedido = new Pedido(restaurante, usu, lanches, quantidade);
+
+                // Execute ações adicionais, como salvar o pedido no banco de dados, se necessário.
+
+                System.out.println(pedido); // Se desejar imprimir o pedido.
             }
         });
+
         return finalizarPedido;
     }
+
 
     public JButton removeDoCardapio(JFrame tela, Lanche lanche){
         Deletando  del = new Deletando();
@@ -436,7 +448,7 @@ public class Buttons extends JButton {
         removeDoCardapio.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                del.deleteLanche(lanche.getId());
+                del.deleteLanche(lanche);
                 System.out.println("Foi deletado");
                 tela.dispose();
                 frames.restaurantesCadastrados();
